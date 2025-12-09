@@ -42,6 +42,12 @@ function createAddQuoteForm() {
   addBtn.textContent = "Add Quote";
 
   addBtn.addEventListener("click", addQuote);
+
+  formDiv.appendChild(quoteInput);
+  formDiv.appendChild(categoryInput);
+  formDiv.appendChild(addBtn);
+
+  formContainer.appendChild(formDiv);
 }
 
 // Add Quote Array + Update DOM
