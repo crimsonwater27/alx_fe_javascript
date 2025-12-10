@@ -6,6 +6,8 @@ const DEFAULT_QUOTES = [
     {text: "Consistency beats talent.", category: "Decipline" }
 ];
 
+let selectedCategory ="all";
+
 function populateCategories() {
 
   const categoryList = quotes.map(quote => quote.category);
@@ -26,7 +28,14 @@ function populateCategories() {
     categoryFilter.appendChild(option);
   });
 
-  restoreLastCategory();
+  function restoreLastCategory() {
+  const savedCategory = localStorage.getItem(FILTER_KEY);
+  if (savedCategory) {
+    selectedCategory = savedCategory;   // ✅
+    categoryFilter.value = savedCategory;
+  }
+}
+
 }
 
 
@@ -177,7 +186,26 @@ function createAddQuoteForm() {
   addBtn.textContent = "Add Quote";
 
   populateCategories();
-  filterQuotes();
+  function filterQuotes() {
+  selectedCategory = categoryFilter.value;
+  localStorage.setItem(FILTER_KEY, selectedCategory);
+
+  const filteredQuotes =
+    selectedCategory === "all"
+      ? quotes
+      : quotes.filter(quote => quote.category === selectedCategory);
+
+  if (filteredQuotes.length === 0) {
+    quoteDisplay.textContent = "No quotes for this category.";
+    return;
+  }
+
+  const randomIndex = Math.floor(Math.random() * filteredQuotes.length);
+  const quote = filteredQuotes[randomIndex];
+
+  quoteDisplay.innerHTML = `"${quote.text}"<br><small>${quote.category}</small>`;
+}
+
 
   // click handler
   addBtn.addEventListener("click", function (ev) {
@@ -312,6 +340,7 @@ function init() {
   loadQuotes();
   createAddQuoteForm();
   populateCategories();
+  restoreLastCategory();
   filterQuotes();
 
   // show last viewed if available, else show random one
