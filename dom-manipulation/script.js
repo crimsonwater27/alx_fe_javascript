@@ -1,63 +1,34 @@
 //Quote Data
-const categoryFilter = document.getElementById("categoryFilter");
-const FILTER_KEY = "lastSelectedCategory";
-
-function populateCategories() {
-  const existing = new Set();
-
-  // Clear except "All Categories"
-  categoryFilter.innerHTML = "";
-  const allOption = document.createElement("option");
-  allOption.value = "all";
-  allOption.textContent = "All Categories";
-  categoryFilter.appendChild(allOption);
-
-  quotes.forEach(quote => {
-    if (!existing.has(quote.category)) {
-      existing.add(quote.category);
-
-      const option = document.createElement("option");
-      option.value = quote.category;
-      option.textContent = quote.category;
-
-      categoryFilter.appendChild(option);
-    }
-  });
-
-  restoreLastCategory();
-}
-
-function filterQuotes() {
-  const selected = categoryFilter.value;
-  localStorage.setItem(FILTER_KEY, selected);
-
-  const filtered =
-    selected === "all"
-      ? quotes
-      : quotes.filter(q => q.category === selected);
-
-  if (filtered.length === 0) {
-    quoteDisplay.textContent = "No quotes in this category.";
-    return;
-  }
-
-  const random = Math.floor(Math.random() * filtered.length);
-  quoteDisplay.innerHTML = `"${filtered[random].text}"<br><small>${filtered[random].category}</small>`;
-}
-
-function restoreLastCategory() {
-  const saved = localStorage.getItem(FILTER_KEY);
-  if (saved) {
-    categoryFilter.value = saved;
-  }
-}
-
 const DEFAULT_QUOTES = [
     {text: "Believe in yourself!", category: "Motivation" },
     {text: "The best way to predict  the future is to create it.", category: "inspitration" },
     {text: "Stay hungry, stay foolish.", category: "success" },
     {text: "Consistency beats talent.", category: "Decipline" }
 ];
+
+function populateCategories() {
+
+  const categoryList = quotes.map(quote => quote.category);
+
+  const uniqueCategories = [...new Set(categoryList)];
+
+  categoryFilter.innerHTML = "";
+
+  const allOption = document.createElement("option");
+  allOption.value = "all";
+  allOption.textContent = "All Categories";
+  categoryFilter.appendChild(allOption);
+
+  uniqueCategories.forEach(category => {
+    const option = document.createElement("option");
+    option.value = category;
+    option.textContent = category;
+    categoryFilter.appendChild(option);
+  });
+
+  restoreLastCategory();
+}
+
 
 //Storage keys
 const LS_KEY = "dqg_quotes_v1";
