@@ -201,14 +201,14 @@ async function fetchQuotesFromServer() {
       category: "Server"
     }));
 
-    syncWithServer(serverQuotes);
+    syncQuotes(serverQuotes);
 
   } catch {
     showMessage("Server unreachable", "red");
   }
 }
 
-function syncWithServer(serverQuotes) {
+function syncQuotes(serverQuotes) {
   let updates = 0;
 
   serverQuotes.forEach(serverQuote => {
