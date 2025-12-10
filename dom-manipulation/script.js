@@ -212,8 +212,11 @@ function syncQuotes(serverQuotes) {
   let updates = 0;
 
   serverQuotes.forEach(serverQuote => {
-    const found = quotes.find(q => q.text === serverQuote.text);
-    if (!found) {
+    const exists = quotes.some(localQuote =>
+      localQuote.text === serverQuote.text
+    );
+
+    if (!exists) {
       quotes.push(serverQuote);
       updates++;
     }
@@ -222,9 +225,15 @@ function syncQuotes(serverQuotes) {
   if (updates > 0) {
     saveQuotes();
     populateCategories();
-    showMessage(`${updates} quotes synced`, "blue");
+    filterQuotes();
+    showMessage(`${updates} quotes synced from server.`, "blue");
+
+    alert("Quotes synced with server!");
+  } else {
+    showMessage("No new server updates.", "gray");
   }
 }
+
 
 // POST TO SERVER
 async function sendQuotesToServer() {
@@ -261,3 +270,4 @@ function init() {
 }
 
 init();
+
