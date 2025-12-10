@@ -7,6 +7,8 @@ const DEFAULT_QUOTES = [
 ];
 
 let selectedCategory ="all";
+const SERVER_URL = "https://jsonplaceholder.typicode.com/posts";
+
 
 function populateCategories() {
 
@@ -38,6 +40,69 @@ function populateCategories() {
 
 }
 
+async function fetchServerQuotes() {
+  try {
+    const response = await fetch(SERVER_URL);
+    const data = await response.json();
+
+    // Convert API posts into "quotes"
+    const serverQuotes = data.slice(0, 10).map(item => {
+      return {
+        text: item.title,
+        category: "Server"
+      };
+    });
+
+    syncWithServer(serverQuotes);
+
+  } catch (error) {
+    console.error("Server fetch failed:", error);
+    showMessage("Server unreachable.", "red");
+  }
+}
+
+async function forceServerOverwrite() {
+  const response = await fetch(SERVER_URL);
+  const data = await response.json();
+
+  quotes = data.slice(0, 10).map(item => ({
+    text: item.title,
+    category: "Server"
+  }));
+
+  saveQuotes();
+  populateCategories();
+  filterQuotes();
+  showMessage("Local data replaced with server data.", "orange");
+}
+
+function syncWithServer(serverQuotes) {
+
+  let updates = 0;
+
+  serverQuotes.forEach(serverQuote => {
+
+    const exists = quotes.some(localQuote =>
+      localQuote.text === serverQuote.text
+    );
+
+    if (!exists) {
+      quotes.push(serverQuote);
+      updates++;
+    }
+
+  });
+
+  if (updates > 0) {
+    saveQuotes();
+    populateCategories();
+    filterQuotes();
+    showMessage(updates + " quotes synced from server.", "blue");
+  } else {
+    showMessage("No new server updates.", "gray");
+  }
+
+}
 
 //Storage keys
 const LS_KEY = "dqg_quotes_v1";
@@ -342,6 +407,7 @@ function init() {
   populateCategories();
   restoreLastCategory();
   filterQuotes();
+  fetchServerQuotes();
 
   // show last viewed if available, else show random one
   const lastIndex = loadLastViewedIndex();
@@ -354,3 +420,6 @@ function init() {
 
 // run
 init();
+
+// Auto-sync every 30 seconds
+setInterval(fetchServerQuotes, 30000);

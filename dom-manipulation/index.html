@@ -27,6 +27,8 @@
     <button id="exportBtn">Export Quotes (JSON)</button>
     <input type="file" id="importFile" accept=".json" />
     <button id="clearStorage">Clear localStorage</button>
+    <button onclick="fetchServerQuotes()">Sync with Server</button>
+    <button onclick="forceServerOverwrite()">Force Server Data</button>
   </div>
 
   <section>
