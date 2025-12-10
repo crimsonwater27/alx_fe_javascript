@@ -40,18 +40,16 @@ function populateCategories() {
 
 }
 
-async function fetchServerQuotes() {
+async function fetchQuotesFromServer() {
   try {
     const response = await fetch(SERVER_URL);
     const data = await response.json();
 
     // Convert API posts into "quotes"
-    const serverQuotes = data.slice(0, 10).map(item => {
-      return {
-        text: item.title,
-        category: "Server"
-      };
-    });
+    const serverQuotes = data.slice(0, 10).map(item => ({
+      text: item.title,
+      category: "Server"
+    }));
 
     syncWithServer(serverQuotes);
 
@@ -60,6 +58,7 @@ async function fetchServerQuotes() {
     showMessage("Server unreachable.", "red");
   }
 }
+
 
 async function forceServerOverwrite() {
   const response = await fetch(SERVER_URL);
@@ -407,7 +406,7 @@ function init() {
   populateCategories();
   restoreLastCategory();
   filterQuotes();
-  fetchServerQuotes();
+  fetchQuotesFromServer();
 
   // show last viewed if available, else show random one
   const lastIndex = loadLastViewedIndex();
@@ -422,4 +421,4 @@ function init() {
 init();
 
 // Auto-sync every 30 seconds
-setInterval(fetchServerQuotes, 30000);
+setInterval(fetchQuotesFromServer, 30000);
